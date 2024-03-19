@@ -1,0 +1,106 @@
+# Mini-Project-ASD-4
+class AnimalNode:
+    def __init__(self, name, species, age, quantity):
+        self.name = name
+        self.species = species
+        self.age = age
+        self.quantity = quantity
+        self.next = None
+
+class Farm:
+    def __init__(self):
+        self.head = None
+
+    def add_animal(self, name, species, age, quantity):
+        new_animal = AnimalNode(name, species, age, quantity)
+        if not self.head:
+            self.head = new_animal
+            new_animal.next = new_animal  
+        else:
+            current = self.head
+            while current.next != self.head:
+                current = current.next
+            current.next = new_animal
+            new_animal.next = self.head
+
+    def view_animals(self):
+        if not self.head:
+            return "Farm is empty."
+        current = self.head
+        animal_dict = {}
+        while True:
+            animal_dict[current.name] = {
+                'species': current.species,
+                'age': current.age,
+                'quantity': current.quantity
+            }
+            current = current.next
+            if current == self.head:
+                break
+        return animal_dict
+
+    def fibonacci_search(self, name):
+        if not self.head:
+            return f"{name} is not found on the farm."
+
+        
+        count = 1
+        current = self.head
+        while current.next != self.head:
+            count += 1
+            current = current.next
+
+        
+        fib_m_minus_2 = 0
+        fib_m_minus_1 = 1
+        fib_m = fib_m_minus_1 + fib_m_minus_2
+        while fib_m < count:
+            fib_m_minus_2 = fib_m_minus_1
+            fib_m_minus_1 = fib_m
+            fib_m = fib_m_minus_1 + fib_m_minus_2
+
+        offset = -1
+        prev = None
+        while fib_m > 1:
+            index = min(offset + fib_m_minus_2, count - 1)
+
+            
+            current = self.head
+            for _ in range(index):
+                current = current.next
+
+            if current.name < name:
+                offset = index
+                fib_m = fib_m_minus_1
+                fib_m_minus_1 = fib_m_minus_2
+                fib_m_minus_2 = fib_m - fib_m_minus_1
+            elif current.name > name:
+                fib_m = fib_m_minus_2
+                fib_m_minus_1 = fib_m_minus_1 - fib_m_minus_2
+                fib_m_minus_2 = fib_m - fib_m_minus_1
+            else:
+                return current
+
+        
+        if fib_m_minus_1 and self.head.name == name:
+            return self.head
+
+       
+        return f"{name} Tidak ada di peternakan."
+
+
+
+farm = Farm()
+farm.add_animal('Sapi ', 'Sapi Limosin', 3, 5)
+farm.add_animal('Ayam ', 'Ayam Kampung', 1, 20)
+farm.add_animal('Kambing', 'Kambing Boer', 2, 8)
+
+print("Lihat Hewam:")
+print(farm.view_animals())
+
+print("\nCari Kucing:")
+result = farm.fibonacci_search('Kucing')
+if isinstance(result, str):
+    print(result)
+else:
+    print("Animal found:", result.name, result.species, result.age, result.quantity)
